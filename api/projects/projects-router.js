@@ -39,7 +39,7 @@ router.get('/:id', (req, res) => {
 
 // POST request to add a new project
 router.post('/', (req, res) => {
-  if (!req.body.name || !req.body.description) {
+  if (!req.body.name || !req.body.description || !req.body.completed) {
     res.status(400).json({ message: 'the missing field is required' });
   } else {
     Projects.insert(req.body)
@@ -53,23 +53,21 @@ router.post('/', (req, res) => {
   }
 });
 
-// PUT request to update a project with the specified actionID
 router.put('/:id', (req, res) => {
   const changes = req.body;
-  Projects.update(req.params.id, changes)
-    .then((project) => {
-      if (project) {
-        res.status(200).json(project);
-      } else if (!req.body) {
-        res.status(400).json({ message: 'the required filed is missing' });
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({
-        message: 'Error updating the project',
+  const id = req.params.id;
+  if (!req.body.name || !req.body.description) {
+    res.status(400).json({ message: 'all fields are required' });
+  } else {
+    Projects.update(id, changes)
+      .then((updatedProject) => {
+        res.status(200).json(updatedProject);
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(500).json({ errorMessage: 'Error updating the project' });
       });
-    });
+  }
 });
 
 // DELETE request to delete an project with the specified actionID

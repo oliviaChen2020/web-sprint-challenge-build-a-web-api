@@ -39,7 +39,7 @@ router.get('/:id', (req, res) => {
 
 // POST request to add a new action
 router.post('/', (req, res) => {
-  if (!req.body.description || !req.body.note) {
+  if (!req.body.description || !req.body.notes) {
     res.status(400).json({ message: 'the missing field is required' });
   } else {
     Actions.insert(req.body)
@@ -56,21 +56,21 @@ router.post('/', (req, res) => {
 // PUT request to update an action with the specified actionID
 router.put('/:id', (req, res) => {
   const changes = req.body;
-  Actions.update(req.params.id, changes)
-    .then((action) => {
-      if (action) {
-        res.status(200).json(action);
-      } else if (!req.body) {
-        res.status(400).json({ message: 'the required filed is missing' });
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({
-        message: 'Error updating the action',
+  const id = req.params.id;
+  if (!req.body.project_id || !req.body.description || !req.body.notes) {
+    res.status(400).json({ message: 'all fields are required' });
+  } else {
+    Actions.update(id, changes)
+      .then((updatedAction) => {
+        res.status(200).json(updatedAction);
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(500).json({ errorMessage: 'Error updating the action' });
       });
-    });
+  }
 });
+
 // DELETE request to delete an action with the specified actionID
 router.delete('/:id', (req, res) => {
   Actions.remove(req.params.id)
