@@ -39,7 +39,7 @@ router.get('/:id', (req, res) => {
 
 // POST request to add a new project
 router.post('/', (req, res) => {
-  if (!req.body.name || !req.body.description || !req.body.completed) {
+  if (!req.body.name || !req.body.description) {
     res.status(400).json({ message: 'the missing field is required' });
   } else {
     Projects.insert(req.body)
